@@ -43,16 +43,17 @@ mixChannel1 = pygame.mixer.Channel(0)
 mixChannel2 = pygame.mixer.Channel(1)
 mixChannel3 = pygame.mixer.Channel(2)
 
+mixChannel1.set_volume(1.0)
 mixChannel2.set_volume(1.0)
+mixChannel3.set_volume(1.0)
 
 friezaWarningSound = pygame.mixer.Sound(file="./sounds/hahaha.wav")
-krillinLaughingSound = pygame.mixer.Sound(file="./sounds/krillinlaughing.wav")
-krillin_NO_Sound = pygame.mixer.Sound(file="./sounds/krillin_no.wav")
-krillinOnSound = pygame.mixer.Sound(file="./sounds/krillindie.wav")
-krillinWarnSound = pygame.mixer.Sound(file="./sounds/krillinWarn.wav")
-
-saberHitSound = pygame.mixer.Sound(file="./sounds/hit.wav")
-saberAppearsSound = pygame.mixer.Sound(file="./sounds/ltsaberappears.wav")
+krillinLaughingSound = pygame.mixer.Sound(file="./sounds/krillinlaugh.wav")
+goku_angry_Sound = pygame.mixer.Sound(file="./sounds/krillindie.wav")
+krillin_explosion_Sound = pygame.mixer.Sound(file="./sounds/explosion.wav")
+krillinWarnSound = pygame.mixer.Sound(file="./sounds/krillinlaugh.wav")
+Hit_Sound = pygame.mixer.Sound(file="./sounds/hit.wav")
+krillinAppearsSound = pygame.mixer.Sound(file="./sounds/krillinlaugh.wav")
 
 Goku = {
     "x": 100,
@@ -276,7 +277,7 @@ def moveKrillin(character, pursue=False):
 
 
 game_on = True
-advantageLight = True
+advantage_Goku = True
 FriezaPursues = True
 advantageTimer = 30
 advantageStartTicks = pygame.time.get_ticks()
@@ -299,19 +300,17 @@ while game_on:
         moveFrieza(Goku, not powerUp)  
         moveKrillin(Krillin)
     if advantageTimer <= 0:  
-        if advantageLight:  
-            advantageLight = False
+        if advantage_Goku:  
+            advantage_Goku = False
             advantageTimer = 20
             vaderPursues = True
-            mixChannel2.play(friezaWarningSound)
+            mixChannel2.play(krillinLaughingSound)
             moveKrillin(Krillin)
         else: 
             mixChannel1.play(krillinLaughingSound)
-            advantageLight = True
+            advantage_Goku = True
             advantageTimer = 20
             moveKrillin(Krillin)
-            if advantageTimer < 5:
-                mixChannel2.play(krillin_NO_Sound)
 
     
 
@@ -365,23 +364,26 @@ while game_on:
    
 
     if (detectCollision(Frieza, Krillin)):
-        powerUp = True
+        if advantage_Goku:
+            powerUp = True
 
-        removeObjectFromBackground(Krillin)
-        mixChannel2.play(saberOnSound)
+            removeObjectFromBackground(Krillin)
+            mixChannel2.play(krillin_explosion_Sound)
 
-        FriezaPursues = False
+            FriezaPursues = False
 
-        powerStartTicks = pygame.time.get_ticks()
+            powerStartTicks = pygame.time.get_ticks()
+            if advantageTimer > 10:
+                mixChannel1.play(goku_angry_Sound)
 
     if (detectCollision(Frieza, Goku)):
+        mixChannel3.play(Hit_Sound)
         if powerUp:  
-            mixChannel3.play(saberHitSound)
             Goku['wins'] += 1
             randomlyPlaceChar(Goku)
             randomlyPlaceChar(Frieza)
         else:
-            if advantageLight:
+            if advantage_Goku:
                 print "Vader caught you while you had the advantage"
                 Frieza['wins'] += 1
                 randomlyPlaceChar(Goku)
@@ -427,13 +429,13 @@ while game_on:
             powerUp = False
             powerTimer = 10
             Goku_image = Goku_image_left
-            print "reset Goku_image after powerUp expired"
-            mixChannel2.play(krillinWarnSound)
-            if advantageLight:  
+            print "reset Goku_image after SSJ expired"
+            mixChannel2.play(krillinLaughingSound)
+            if advantage_Goku:  
                 randomlyPlaceChar(Krillin)
-                mixChannel2.play(saberAppearsSound)
+                mixChannel2.play(krillinAppearsSound)
 
-    if advantageLight:
+    if advantage_Goku:
         advantage_text = font.render(
             "Krillin must die: %d" % advantageTimer, True, (255, 255, 255))
 
