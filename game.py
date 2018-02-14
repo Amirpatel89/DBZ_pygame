@@ -7,7 +7,6 @@ import random
 from math import fabs
 
 
-
 pygame.init()
 screen_size_x = 1067
 screen_size_y = 600
@@ -142,13 +141,10 @@ def keepKrillinInBounds(character):
     elif character['x'] + 100 >= screen_size_x:
         randomlyPlaceChar(Krillin)
 
-
 def pointMe(yourPosition, goalPosition):
-
     delta = [0, 0]
     delta[0] = yourPosition[0] - goalPosition[0]
     delta[1] = yourPosition[1] - goalPosition[1]
-
     return delta
 
 
@@ -157,14 +153,12 @@ def randomlyPlaceChar(character):
     character['y'] = random.randint(32, screen_size_y - 175)
     return (character['x'], character['y'])
 
-
 def removeObjectFromBackground(object):
     pygame_screen.blit(background_image, (object['x'], object['y']), pygame.Rect(
         object['x'], object['y'], object['height'], object['width']))
     object['x'] = screen_size_x + 100
     object['y'] = screen_size_y + 100
     return (object['x'], object['y'])
-
 
 def detectCollision(character1, character2):
     distance_between = fabs(
@@ -174,16 +168,11 @@ def detectCollision(character1, character2):
         return True
 
     return (False)
-
-
 def moveFrieza(character, pursue=True):
 
     target = pointMe([Frieza['x'], Frieza['y']],
                      [character['x'], character['y']])
-
-
     global Frieza_image
-
     if pursue:
         if target[0] < 0:  
             Frieza_image = FriezaImageRight
@@ -204,8 +193,6 @@ def moveFrieza(character, pursue=True):
         else:
 
             target[0] = 1
-
-
     if pursue:
         if target[0] <= 32:
             if target[1] <= 0:
@@ -262,15 +249,13 @@ def moveKrillin(character, pursue=False):
         elif target[1] > 0:
             Krillin['y'] += round(fabs(Krillin['speed']
                                          * target[1] / target[0]))
-    else:
-        
-            print "krillin gonna die"
         
     if ((detectCollision(Krillin, topLeftCorner)) or
         (detectCollision(Krillin, topRightCorner)) or
         (detectCollision(Krillin, bottomLeftCorner)) or
         (detectCollision(Krillin, bottomRightCorner))):
         randomlyPlaceChar(Krillin)
+
 
    
     keepKrillinInBounds(Krillin)
@@ -376,6 +361,7 @@ while game_on:
             if advantageTimer > 10:
                 mixChannel1.play(goku_angry_Sound)
 
+
     if (detectCollision(Frieza, Goku)):
         mixChannel3.play(Hit_Sound)
         if powerUp:  
@@ -384,24 +370,19 @@ while game_on:
             randomlyPlaceChar(Frieza)
         else:
             if advantage_Goku:
-                print "Vader caught you while you had the advantage"
                 Frieza['wins'] += 1
                 randomlyPlaceChar(Goku)
                 randomlyPlaceChar(Frieza)
                 FriezaPursues = True
+                mixChannel3.play(friezaWarningSound)
             else:
-                print "Dark forces are at play!"
                 Frieza['wins'] += 2
                 randomlyPlaceChar(Goku)
                 randomlyPlaceChar(Frieza)
                 FriezaPursues = True
                 randomlyPlaceChar(Krillin)
-
-
     if powerUp:  
-
         powerSeconds = (pygame.time.get_ticks() - powerStartTicks) / 1000
-
         if keys_down['up']:
             Goku_image = SSJGokuNormal
             Goku['y'] -= Goku['speed']
@@ -415,31 +396,22 @@ while game_on:
         elif keys_down['right']:
             Goku_image = SSJGokuInvert
             Goku['x'] += Goku['speed']
-
-
-
         if powerSeconds >= 1: 
             powerTimer -= 1
             powerSeconds = 0
             powerStartTicks = pygame.time.get_ticks()
-
-
-
         if powerTimer <= 0:  
             powerUp = False
             powerTimer = 10
             Goku_image = Goku_image_left
-            print "reset Goku_image after SSJ expired"
             mixChannel2.play(krillinLaughingSound)
             if advantage_Goku:  
                 randomlyPlaceChar(Krillin)
                 mixChannel2.play(krillinAppearsSound)
-
+                
     if advantage_Goku:
         advantage_text = font.render(
             "Krillin must die: %d" % advantageTimer, True, (255, 255, 255))
-
-
         if not powerUp: 
             pygame_screen.blit(Krillin_image, [
                                Krillin['x'], Krillin['y']])
@@ -467,7 +439,6 @@ while game_on:
     pygame_screen.blit(wins_text, [40, 40])
     pygame_screen.blit(friezawins_text, [300, 40])
     if powerTimer != 10:
-        print powerTimer
         pygame_screen.blit(SSJ_text, [800, 40])
 
     pygame_screen.blit(advantage_text, [600, 40])
